@@ -9,8 +9,8 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
 
 export const Apple = () => {
-    const [name, setName] = useState("Vani");
-    const [email, setEmail] = useState("vnayk2108@gmail.com");
+    const [name, setName] = useState("Riya");
+    const [email, setEmail] = useState("riyachhatrodiya8102002@gmail.com");
     const [open, setOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -52,7 +52,7 @@ export const Apple = () => {
             cursor: "pointer",
         }}
             onClick={handleClick}>
-        <Avatar sx={{ bgcolor: "blue"}}>VN</Avatar>
+        <Avatar sx={{ bgcolor: "blue"}}>CR</Avatar>
         
         </div>
         </div>
@@ -91,7 +91,7 @@ export const Apple = () => {
               }}>
 
 
-            <h5>Vani Nayak</h5>
+            <h5>Chhatrodiya Riya</h5>
             <LogoutOutlinedIcon onClick={onHomePageButtonClick}/>
               {/* <Button variant="contained" onClick={onHomePageButtonClick} className="">
                   
