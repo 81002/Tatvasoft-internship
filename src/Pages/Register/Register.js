@@ -1,30 +1,23 @@
 import React from "react";
-//import { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from '@mui/material/Button';
 import { Breadcrumbs, TextField, Link, Typography} from "@mui/material";
-//import { Avatar } from "@mui/material";
-//import { Popover } from "@mui/material";
-//import LogoutIcon from '@mui/icons-material/Logout';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import { Formik } from 'formik';
 import * as Yup from "yup";
-//import axios from "axios";
 import { toast } from 'react-toastify';
 import "./register_styles.css";
 import authService from "../../Service/auth.service";
+import userService from "../../Service/user.service";
 
 
 
 const Register = () => {
-    // const [name, setName] = useState("");
-    // const [email, setEmail] = useState("");
-    const [role,setRole]=useState('');
-    // const [open, setOpen] = useState(false);
-    // const [anchorEl, setAnchorEl] = useState(null);
-    const Navigate = useNavigate('');
+    const [roleList,setRoleList]=useState([]);
+    const navigate = useNavigate('');
     const initialValues = {
         firstName: '',
         lastName: '',
@@ -33,6 +26,18 @@ const Register = () => {
         password: '',
         confirmPassword: '',
     }
+
+    useEffect(() => {
+        if (roleList.length) return;
+        getRoles();
+      }, [roleList]);
+    
+      const getRoles = () => {
+        userService.getAllRoles().then((res) => {
+          setRoleList(res);
+        });
+      };
+
 
     const validationSchema = Yup.object().shape({
         firstName: Yup.string().required("First name is required"),
@@ -55,60 +60,16 @@ const Register = () => {
     const onSubmit = (data) => {
         delete data.confirmPassword;
         authService.create(data).then((res) => {
-          Navigate("/");
+          navigate("/login");
           toast.success("Successfully registered");
         });
       };
-    // const onFormSubmit = (values, { setSubmitting }) => {
-    //     const requestData={
-    //         "firstName":values.firstName,
-    //         "lastName":values.lastName,
-    //         "email":values.email,
-    //         "password":values.password,
-    //         "confirmPd":values.confirmPd
-    //     }
-    //     console.log("On Form Submit:", values);
-    //     setTimeout(() => {
-    //         alert(JSON.stringify(values, null, 2));
-    //         setSubmitting(false);
-    //     }, 400);
-    //     alert("Form Submitted Successfully....");
-    //     axios.post("https://jsonplaceholder.typicode.com/posts",requestData).then((res)=>{
-    //         if(res.status===201){
-    //             console.log(res.data.id);
-    //             toast.success('API call completed Successfully', {
-    //                 position: "top-right",
-    //                 autoClose: 3000,
-    //                 hideProgressBar: false,
-    //                 closeOnClick: true,
-    //                 pauseOnHover: true,
-    //                 draggable: true,
-    //                 theme: "light",
-    //                 });
-    //         }
-    //     });    
-    // }
-    // const NavigateHome = () => {
-    //     Navigate('/');
-    //     // alert('The login button is clicked...')
-    //     console.log("Name:", name);
-    //     console.log("Email:", email);
-    // }
-    // const handleClick = (event) => {
-    //     setAnchorEl(event.currentTarget);
-    //     setOpen(true);
-    // };
-
-    // const handleClose = () => {
-    //     setAnchorEl(null);
-    //     setOpen(false);
-    // };
     return (
         <>
             <div style={{ padding: 5 }}></div>
             <div >
                 <div className="container">
-                    <div style={{paddingLeft:640, fontSize:18}}>
+                    <div style={{justifyContent:"center",display:"flex",fontSize:18}}>
                     <Breadcrumbs separator="›" aria-label="breadcrumb" className="breadcrumb-wrapper">
                     <Link color="inherit" href="/" title="Home" className="link-custom" style={{textDecoration:"none",fontSize:18}} >Home</Link>
                     <Typography className="typo-custom" style={{fontSize:18}}>Create an Account</Typography>
@@ -120,10 +81,9 @@ const Register = () => {
                             Login or Create an Account
                             <span className="underline"></span>
                             </h1>
-                        
                     </div>
-
                 </div>
+                
                 <div style={{
                     width:'75%',
                     margin:'auto',
@@ -136,8 +96,7 @@ const Register = () => {
                         >
                             {({ values, 
                                 errors, 
-                                touched, 
-                                isSubmitting, 
+                                touched,  
                                 handleChange, 
                                 handleBlur, 
                                 handleSubmit }) => {
@@ -145,8 +104,9 @@ const Register = () => {
                                     <form onSubmit={handleSubmit} >
                                         <div className="form-box">
                                             <div className="personal_info">
-                                        <Typography variant="h6" className="custom-typography" style={{fontWeight:500}}>Personal Information</Typography>
-                                        <p className='paraStyle'>Please enter the following information to create your account.</p>
+                                                <div style={{marginTop:50}}></div>
+                                                <Typography variant="h6" className="custom-typography" style={{fontWeight:500,paddingBottom:10}}>Personal Information</Typography>
+                                                <p className='paraStyle'>Please enter the following information to create your account.</p>
                                         
                                         <div className='side-by-side'>
                                            <div>
@@ -163,8 +123,8 @@ const Register = () => {
                                             />
                                             {errors.firstName && touched.firstName && <div style={{
                                                 color: "red",
-                                                fontSize: 15,
-                                                marginBottom: 15
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.firstName}</div>}
                                             </div> 
                                         <div>
@@ -181,13 +141,13 @@ const Register = () => {
                                             />
                                             {errors.lastName && touched.lastName && <div style={{
                                                 color: 'red',
-                                                fontSize: 15,
-                                                marginBottom: 15,
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.lastName}</div>}
                                             </div>
                                         </div>
                                             
-                                        <div style={{padding:5}}></div>
+                                        {/* <div style={{padding:5}}></div> */}
                                     <div className='side-by-side'>
                                         <div>
                                             <div className='label'>Email Address* </div>
@@ -203,31 +163,36 @@ const Register = () => {
                                             />
                                             {errors.email && touched.email && <div style={{
                                                 color: 'red',
-                                                fontSize: 15,
-                                                marginBottom: 15,
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.email}</div>}
                                             </div>
 
                                             <div>
                                             <div className='label'>Roles</div>
                                             <Select
-                                            name='role'
-                                            value={role}
+                                            name='roleId'
+                                            id={"roleId"}
+                                            value={values.roleId}
                                             size="small"
                                             style={{width:'532px'}}
-                                            onChange={(event) => {
-                                                        setRole(event.target.value);
-                                                    }}
+                                            onChange={handleChange}
                                                 
                                             >
-                                            <MenuItem value=""></MenuItem>
-                                            <MenuItem value={'Buyer'}>Buyer</MenuItem>
-                                            <MenuItem value={'Seller'}>Seller</MenuItem>
+                                            {roleList.length > 0 &&
+                                               roleList.map((role) => (
+                                                  <MenuItem
+                                                    value={role.id}
+                                                    key={"name" + role.id}
+                                                  >
+                                                    {role.name}
+                                                 </MenuItem>
+                                            ))}
                                             </Select>
                                             {errors.roleId && touched.roleId && <div style={{
                                                 color: 'red',
-                                                fontSize: 15,
-                                                marginBottom: 15,
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.roleId}</div>}
                                             </div>
                                     </div>
@@ -238,8 +203,8 @@ const Register = () => {
                                             flexDirection: 'column',
                                             rowGap: 10
                                         }}>
-                                        <div style={{marginTop:70}}>
-                                                <Typography variant="h6" className="custom-typography" style={{fontWeight:500}}>Login Information</Typography>
+                                        <div style={{marginTop:30}}>
+                                                <Typography variant="h6" className="custom-typography" style={{fontWeight:500,paddingBottom:10}}>Login Information</Typography>
                                                
                                         </div>
                                         <div className='side-by-side'>
@@ -257,8 +222,8 @@ const Register = () => {
                                                  />
                                                  {errors.password && touched.password && <div style={{
                                                 color: 'red',
-                                                fontSize: 15,
-                                                marginBottom: 15,
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.password}</div>}
                                             </div>
                                             <div>
@@ -275,39 +240,32 @@ const Register = () => {
                                                  />
                                              {errors.confirmPassword && touched.confirmPassword && <div style={{
                                                 color: 'red',
-                                                fontSize: 15,
-                                                marginBottom: 15,
+                                                fontSize: 14,
+                                                position:"absolute"
                                             }}>{errors.confirmPassword}</div>}
                                             </div>
                                             </div>
                                         </div>
-                                           <div style={{marginBottom:60}}></div>
+                                           <div style={{marginBottom:40}}></div>
+                                           <div className="register_wrapper_btn">
                                             <Button 
                                             variant="contained" 
                                             type="submit" 
-                                            style={{ 
-                                                backgroundColor: '#f14d54', 
-                                                color: 'white', 
-                                                width:130,
-                                                height:45, 
-                                                fontSize:20,
-                                                fontWeight:550,
-                                                fontFamily:("Roboto", "Helvetica", "Arial", "sans-serif"),
-                                                textTransform:"capitalize"}}
-                                                disabled={isSubmitting}
+                                            className="register_btn btn"
+                                            disableElevation
                                             >
-                                                register
-                                            </Button>  
+                                                Register
+                                            </Button> 
+                                            </div> 
 
-                                    </div>              
+                                        </div>              
                                     </form>
 
                                 
                                 );
-                            }
-                            }
+                            } }
                         </Formik>
-</div>
+                        </div>
                     </div>
                 </div>
         </>);

@@ -1,36 +1,24 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-//import { useState,useEffect  } from "react";
 import Button from '@mui/material/Button';
-import { TextField } from "@mui/material";
-
 import "./login_styles.css";
-import { Breadcrumbs, Link, Typography } from "@mui/material";
+import { Breadcrumbs, Link,TextField, Typography } from "@mui/material";
 import { Formik } from 'formik';
 import * as Yup from "yup";
 import authService from "../../Service/auth.service";
 import { toast } from 'react-toastify';
 import "./login_styles.css";
+import { useAuthContext } from "../../context/auth";
+
 
 const Login = () => {
-   
-  // const [email, setEmail] = useState("");
-  // const[password,setPassword]=useState('');
-  // const [open, setOpen] = useState(false);
-  // const [anchorEl, setAnchorEl] = useState(null);
-  const Navigate = useNavigate('');
-  // const [user, setUser] = useState([]);
-
-  // useEffect(() => {
-  //   axios.get("https://jsonplaceholder.typicode.com/posts").then((res) => {
-  //   console.log("User detail:",res.data);
-  //   setUser(res.data);
-  //   });
-  // }, []);
+  const navigate = useNavigate();
+  const authContext = useAuthContext();
   const initialValues = {
     email: '',
     password: ''
-  }
+  };
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
     .email("Invalid email address format")
@@ -39,42 +27,23 @@ const Login = () => {
     .min(5, "Password must be 5 characters at minimum")
     .required("Password is required"),
   });
+
   const onSubmit = (values) => {
     authService.login(values).then((res) => {
       delete res._id;
       delete res.__v;
-      // authContext.setUser(res);
-      Navigate("/");
+      authContext.setUser(res);
+      navigate("/");
       toast.success("Successfully logged in");
     });
-    
-    // setTimeout(() => {
-    //   alert(JSON.stringify(values, null, 2));
-    //   setSubmitting(false);
-    // }, 400);
-    // alert("Form Submitted Successfully....")
-  };
-  // const NavigateHome = () => {
-  //   Navigate('/');
-  //   // alert('The login button is clicked...')
-  //   console.log("Email:", email);
-  //   console.log("Password",password);
-  // }
-  // const handleClick = (event) => {
-  //   setAnchorEl(event.currentTarget);
-  //   setOpen(true);
-  // };
 
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  //   setOpen(false);
-  // };
+  };
   
   return (
     <>
       <div style={{ padding: 5 }}></div>
       <div className="container">
-                    <div style={{paddingLeft:640, fontSize:18}}>
+                    <div style={{justifyContent:"center",display:"flex", fontSize:18}}>
                     <Breadcrumbs separator="›" aria-label="breadcrumb" className="breadcrumb-wrapper">
                     <Link color="inherit" href="/" title="Home" className="link-custom" style={{textDecoration:"none",fontSize:18}} >Home</Link>
                     <Typography className="typo-custom" style={{fontSize:18}}>Login</Typography>
@@ -86,16 +55,14 @@ const Login = () => {
                             Login or Create an Account
                             <span className="underline"></span>
                             </h1>
-                        
                     </div>
-
                 </div>
       </div>
       
-<div style={{margin:'auto',width:'70%'}}>
-    <div className="side-by-side">
-        <div className="customer">
-          <Typography variant="h6" className="custom-typography1" style={{fontWeight:500}} mt={ 3}>New Customer</Typography>
+      <div style={{margin:'auto',width:'70%'}}>
+        <div className="side-by-side1">
+          <div className="customer">
+            <Typography variant="h6" className="custom-typography1" style={{fontWeight:500,paddingBottom:10}} mt={ 3}>New Customer</Typography>
             <div style={{marginBottom:10, width:'500px'}}></div>
             <p className='paraStyle'>Registration is free and easy.</p>
             <div style={{marginBottom:10}}></div>
@@ -105,36 +72,28 @@ const Login = () => {
                 <li style={{paddingBottom:12}}>View and track orders and more</li>
             </ul>
             <div style={{marginBottom:'150px'}}></div>
-            <Button 
+            <div className="btn_register_wrapper">
+              <Button 
                 variant="contained" 
                 type="submit"
-                style={{ 
-                  backgroundColor: '#f14d54', 
-                  color: 'white', 
-                  width:220,
-                  height:45, 
-                  fontSize:20,
-                  fontWeight:500,
-                  fontFamily:("Roboto", "Helvetica", "Arial", "sans-serif"),
-                  textTransform:"revert"}}
-                  onClick={()=>Navigate('/register')}
-            >
+                className="register-btn btn"
+                onClick={()=>navigate('/register')}
+                disableElevation
+              >
                 Create an Account
-            </Button>
-        </div>  
+              </Button>
+            </div>
+          </div>  
    
-        <div className="loginpart">
-        <Typography variant="h6" className="custom-typography1" style={{fontWeight:500}} >Registered Customers</Typography>
-        
-        <p className='paraStyle1'>If you have an account with us, please log in</p>
-        
-
-      <Formik 
+          <div className="loginpart">
+          <Typography variant="h6" className="custom-typography1" style={{fontWeight:500,paddingBottom:10}} >Registered Customers</Typography>
+          <p className='paraStyle1'>If you have an account with us, please log in.</p>
+          <Formik 
             initialValues={initialValues} 
             validationSchema={validationSchema} 
             onSubmit={onSubmit}
-        >
-        {({ 
+          >
+          {({ 
             values, 
             errors, 
             touched, 
@@ -160,17 +119,19 @@ const Login = () => {
                             onChange={handleChange}
                             name="email"
                             size="small"
+                            autoComplete="off"
                             onBlur={handleBlur}
                             
                           />
                           
                           {errors.email && touched.email && <div style={{
                             color: 'red',
-                            fontSize: 15,
-                            marginBottom: 10,
+                            fontSize: 14,
+                            position:"absolute"
                             }}>{errors.email}</div>}
                           </div>
                           <div style={{paddingBottom:20}}></div>
+
                         <div>
                         <div className='label'>Password*</div>
                         <TextField
@@ -180,6 +141,7 @@ const Login = () => {
                             onChange={handleChange}
                             name="password"
                             size="small"
+                            autoComplete="off"
                             variant="outlined"
                             onBlur={handleBlur}
                             
@@ -187,29 +149,24 @@ const Login = () => {
                         {errors.password && touched.password && 
                             <div style={{
                                 color: 'red',
-                                fontSize: 15,
-                                marginBottom: 10
+                                fontSize: 14,
+                                position:"absolute"
                             }}>
                         {errors.password}</div>}
                         </div>
                     </div>
+                    
                     <div style={{ marginBottom: '60px' }}></div>
+                    <div className="btn_login_wrapper">
                     <Button 
                         variant="contained" 
                         type="submit" 
-                        disabled={isSubmitting} 
-                        style={{ 
-                          backgroundColor: '#f14d54', 
-                          color: 'white', 
-                          width:100,
-                          height:45, 
-                          fontSize:20,
-                          fontWeight:500,
-                          fontFamily:("Roboto", "Helvetica", "Arial", "sans-serif"),
-                          textTransform:"revert"}}
+                        disableElevation 
+                        className="login-btn btn"
                     >
                         Login
                     </Button>
+                    </div>
                 </form>
             );  }
         }
